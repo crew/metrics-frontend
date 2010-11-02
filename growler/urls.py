@@ -5,6 +5,8 @@ from django.conf.urls.defaults import *
 # admin.autodiscover()
 
 urlpatterns = patterns('',
+    (r'^growler/$', 'growler.views.index')
+
     # Example:
     # (r'^growler/', include('growler.foo.urls')),
 
