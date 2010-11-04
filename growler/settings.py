@@ -3,6 +3,8 @@
 import utils
 
 ROOT = utils.root(__file__)
+MODULE = utils.module(__file__)
+
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
