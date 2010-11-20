@@ -4,69 +4,71 @@
 <script type="text/javascript">
 google.load("jquery", "1");
 </script>
-<script type="text/javascript" src="{% url media "js/highcharts.src.js" %}"></script>
+<script type="text/javascript" src="{% url media "js/highcharts.js" %}"></script>
 
 <script type="text/javascript">
 
-function create_chart() {
-  var chart1 = new Highcharts.Chart({
-    chart: {
-      renderTo: 'graph',
-      defaultSeriesType: 'line'
-    },
-    title: {
-      text: 'Fruit Consumption'
-    },
-    xAxis: {
-      categories: ['Apples', 'Bananas', 'Oranges']
-    },
-    yAxis: {
-      title: {
-        text: 'Fruit eaten'
-      }
-   },
-   series: [{
-     name: 'Jane',
-     data: [1, 0, 4]
-   }, {
-     name: 'John',
-     data: [5, 7, 3]
-    }]
-  });
-}
-
-function create_chart2(data) {
+function create_chart(data) {
+  var last;
+  var start = null;
   for (var i in data) {
-    data[i]["x"] = data[i]["timestamp"];
-    data[i]["y"] = data[i]["amount"];
+    // For new Date(float) the unit is in milliseconds instead of seconds.
+    data[i].x = data[i].timestamp * 1000;
+    data[i].y = data[i].amount;
+    data[i].name = new Date(data[i].x);
+    if (!start) {
+      start = data[i].x;
+    }
+    last = data[i].x;
   }
-  var chart1 = new Highcharts.Chart({
+  // Create the chart.
+  Highcharts.Chart({
+    credits: {text: "crew", href: "."},
     chart: {
-      renderTo: 'graph2',
-      defaultSeriesType: 'line'
+      // the id of the div element for drawing the graph.
+      renderTo: "graph",
+      // The type of the graph.
+      defaultSeriesType: "line"
     },
-    title: {
-      text: 'Blah'
-    },
+    // The title.
+    title: {text: ""},
+    // The list of "series" (a line you see on the graph).
     series: [{
+      name: "Blah",
       data: data
-    }]
+    }],
+    xAxis: {
+      labels: {
+        enabled: true,
+        formatter: function() {
+          // The formatting function for the x-axis.
+          var x = new Date(this.value);
+          // TODO FIXME
+          return "" + x.getHours() + ":" + x.getMinutes() + ":"
+            + x.getSeconds();
+        }
+      }
+    },
+    plotOptions: {
+      line: {
+        pointStart: start,
+      }
+    }
   });
 }
 
 $(document).ready(function() {
-  create_chart();
+  // TODO Make the namespace selectable.
   var ns = "ns";
-  var start = 12313;
-  var end = 1291286215;
+  // TODO get the start/end times from a form.
+  var start = 1290279991.611155;
+  var end = 1290289991.611155;
   $("#fetch").click(function (e) {
     e.preventDefault();
     $.ajax({
       type: "POST",
       url: "{% url json-view %}",
-      success: function (data, status, xhr) {
-        create_chart2(data);
-      },
+      success: create_chart,
       data: {
         'ns': ns,
         'start': start,
@@ -81,10 +83,8 @@ $(document).ready(function() {
 
 {% block content %}
 
-
 <a id="fetch" href="#">fetch</a>
 
-<div id="graph2"></div>
 <div id="graph"></div>
 
 {% endblock %}
