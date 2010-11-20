@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% block scripts %}
+<script type="text/javascript" src="http://www.google.com/jsapi"></script>
+<script type="text/javascript">
+google.load("jquery", "1");
+</script>
+<script type="text/javascript" src="{% url media "js/highcharts.src.js" %}"></script>
+
+<script type="text/javascript">
+
+function create_chart() {
+  var chart1 = new Highcharts.Chart({
+    chart: {
+      renderTo: 'graph',
+      defaultSeriesType: 'line'
+    },
+    title: {
+      text: 'Fruit Consumption'
+    },
+    xAxis: {
+      categories: ['Apples', 'Bananas', 'Oranges']
+    },
+    yAxis: {
+      title: {
+        text: 'Fruit eaten'
+      }
+   },
+   series: [{
+     name: 'Jane',
+     data: [1, 0, 4]
+   }, {
+     name: 'John',
+     data: [5, 7, 3]
+    }]
+  });
+}
+
+function create_chart2(data) {
+  for (var i in data) {
+    data[i]["x"] = data[i]["timestamp"];
+    data[i]["y"] = data[i]["amount"];
+  }
+  var chart1 = new Highcharts.Chart({
+    chart: {
+      renderTo: 'graph2',
+      defaultSeriesType: 'line'
+    },
+    title: {
+      text: 'Blah'
+    },
+    series: [{
+      data: data
+    }]
+  });
+}
+
+$(document).ready(function() {
+  create_chart();
+  var ns = "ns";
+  var start = 12313;
+  var end = 1291286215;
+  $("#fetch").click(function (e) {
+    e.preventDefault();
+    $.ajax({
+      type: "POST",
+      url: "{% url json-view %}",
+      success: function (data, status, xhr) {
+        create_chart2(data);
+      },
+      data: {
+        'ns': ns,
+        'start': start,
+        'end': end,
+      }
+    });
+  });
+});
+</script>
+
+{% endblock %}
+
+{% block content %}
+
+
+<a id="fetch" href="#">fetch</a>
+
+<div id="graph2"></div>
+<div id="graph"></div>
+
+{% endblock %}

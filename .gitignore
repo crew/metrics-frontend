@@ -3,3 +3,4 @@
 *~
 doc/build
 build
+*.sqlite3

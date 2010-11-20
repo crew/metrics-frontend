@@ -2,13 +2,13 @@
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
-    <!--<link rel="stylesheet" href="style.css"/>-->
-    <title>{% block title %}Lab Metrics{% endblock %}</title>
+  <!--<link rel="stylesheet" href="style.css"/>-->
+  <title>{% block title %}Lab Metrics{% endblock %}</title>
+  {% block styles %}{% endblock %}
+  {% block scripts %}{% endblock %}
 </head>
 
 <body>
-    <div id="graph">
-        {% block content %}{% endblock %}
-    </div>
+<div id="content">{% block content %}{% endblock %}</div>
 </body>
 </html>
