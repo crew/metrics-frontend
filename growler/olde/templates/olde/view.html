@@ -7,12 +7,14 @@ google.load("jquery", "1");
 <script type="text/javascript" src="{% url media "js/highcharts.js" %}"></script>
 
 <script type="text/javascript">
+var tz_offset = new Date().getTimezoneOffset() * 60;
 function create_chart(data) {
   var last;
   var start = null;
   for (var i in data) {
     // For new Date(float) the unit is in milliseconds instead of seconds.
-    data[i].x = data[i].timestamp * 1000;
+    // Account for timezone offset.
+    data[i].x = (data[i].timestamp - tz_offset) * 1000;
     data[i].y = data[i].count;
     data[i].name = new Date(data[i].x);
     if (!start) {
@@ -60,8 +62,8 @@ $(document).ready(function() {
   // TODO Make the namespace selectable.
   var ns = "ns";
   // TODO get the start/end times from a form.
-  var start = 1290279991.611155;
-  var end = 1290289991.611155;
+  var end = new Date().getTime() / 1000.0 - tz_offset;
+  var start = end - 100000 - tz_offset;
   $("#fetch").click(function (e) {
     e.preventDefault();
     $.ajax({
@@ -75,6 +77,7 @@ $(document).ready(function() {
       }
     });
   });
+  $("#fetch").click();
 });
 </script>
 
