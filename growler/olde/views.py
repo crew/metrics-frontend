@@ -28,5 +28,17 @@ def json_view(request):
     # Retrieve data.
     api = HttpAPI(namespace=ns, apikey='test', url=settings.FLAMONGO_ENDPOINT)
     ret = api.retrieve(start_time=start, end_time=end, interval=interval)
+    # XXX Begin hack
+    acc = {}
+    for x in ret:
+        try:
+            acc[x['timestamp']].append(x)
+        except KeyError:
+            acc[x['timestamp']] = [x]
+    y = []
+    for k, values in acc.items():
+        count = len(values)
+        y.append({'timestamp': k, 'count': count})
+    # XXX End hack
     # return as JSON.
-    return HttpResponse(json.dumps(ret), mimetype='text/json')
+    return HttpResponse(json.dumps(y), mimetype='text/json')
