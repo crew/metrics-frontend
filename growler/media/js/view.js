@@ -185,7 +185,7 @@ labMetrics.run = function(jsonViewUrl){
     var last24 = labMetrics.getLast24();
     labMetrics.reloadChart(last24.dayAgo, last24.now);
 
-    labMetrics.reload && setTimeout(loop, 3600000);
+    labMetrics.reload && setTimeout(loop, 600000);
   }
   loop();
 };
