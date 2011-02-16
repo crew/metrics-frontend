@@ -6,6 +6,18 @@ if(!window.console){
 var labMetrics = {};
 
 labMetrics.tz_offset = new Date().getTimezoneOffset() * 60;
+labMetrics.reload = true;
+
+labMetrics.getLast24 = function(){
+  var now = new Date()
+    , dayAgo = new Date(now.getFullYear(), now.getMonth(), now.getDate()-1,
+                        now.getHours(), now.getMinutes(), now.getSeconds())
+
+  return {
+      now: now
+    , dayAgo: dayAgo
+    };
+};
 
 labMetrics.create_chart = function (data) {
   //console.log(data);
@@ -96,41 +108,57 @@ labMetrics.create_chart = function (data) {
           enabled: true
         }
   });
-}
+};
+
+labMetrics.reloadChart = function(start, end){
+  labMetrics.start.datetimepicker('setDate', start);
+  labMetrics.end.datetimepicker('setDate', end);
+
+  $('#fetch').click();
+};
 
 labMetrics.run = function(jsonViewUrl){
-  var start = $('#start')
-    , end = $('#end')
-    , stime
+  var stime
     , etime
-    , now = new Date()
-    , dayAgo = new Date(now.getFullYear(), now.getMonth(), now.getDate()-1,
-                        now.getHours(), now.getMinutes(), now.getSeconds())
-    , ns = "ns";
+    , ns = "ns"
+    , last24 = labMetrics.getLast24()
+    , reload = $('#reload');
 
-  start.datetimepicker();
-  end.datetimepicker();
+  labMetrics.start = $('#start');
+  labMetrics.end = $('#end');
 
-  console.log(dayAgo, now)
-  start.datetimepicker('setDate', dayAgo);
-  end.datetimepicker('setDate', now);
+  labMetrics.start.datetimepicker();
+  labMetrics.end.datetimepicker();
+
+  reload.click(function(e) {
+    if(labMetrics.reload) {
+      labMetrics.reload = false;
+      reload.html('Auto reload?');
+    }
+    else {
+      labMetrics.reload = true;
+      reload.html('Reloading...');
+      loop();
+    }
+  });
 
   $("#fetch").click(function (e) {
-    $('#fetch').html('<img src="/media/graphics/ajax-loader.gif" %}">');
+    var now = new Date();
+
+    $('#fetch').html('<img src="/media/graphics/ajax-loader.gif">');
 
     e.preventDefault();
-    now = new Date();
 
-    stime = start.datetimepicker('getDate');
-    etime = end.datetimepicker('getDate');
+    stime = labMetrics.start.datetimepicker('getDate');
+    etime = labMetrics.end.datetimepicker('getDate');
 
     if(now - etime < 0) {
       etime = now;
-      end.datetimepicker('setDate', now);
+      labMetrics.end.datetimepicker('setDate', now);
     }
     if(now - stime < 0) {
       stime = now;
-      start.datetimepicker('setDate', now);
+      labMetrics.start.datetimepicker('setDate', now);
     }
     if(etime - stime < 0) {
       alert('please make sure that the ending date is after the starting date');
@@ -152,5 +180,12 @@ labMetrics.run = function(jsonViewUrl){
       }
   });
 
-  $('#fetch').click();
-}
+
+  function loop(){
+    var last24 = labMetrics.getLast24();
+    labMetrics.reloadChart(last24.dayAgo, last24.now);
+
+    labMetrics.reload && setTimeout(loop, 3600000);
+  }
+  loop();
+};
