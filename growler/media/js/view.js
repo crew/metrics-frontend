@@ -68,18 +68,14 @@ labMetrics.create_chart = function (data) {
         }]
     , xAxis: {
           type: 'datetime'
-        , dateTimeLabelFormats: {
-              second: '%e %b-%H:%M'
-            , minute: '%e %b-%H:%M'
-            , hour: '%e %b-%H:%M'
-            , day: '%e %b-%H:%M'
-            , week: '%e %b-%H:%M'
-            , month: '%e %b-%H:%M'
-            , year: '%e %b-%H:%M'
-            }
         , labels: {
               enabled: true
             , staggerLines: 2
+            , formatter: function(){
+                var d = new Date(this.value);
+                return ''+Highcharts.dateFormat('%d %b', d)+'-'+
+                  ('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2);
+            }
           }
         }
     , yAxis: {
