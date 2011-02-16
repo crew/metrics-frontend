@@ -4,6 +4,7 @@ from django.http import HttpResponse
 from django.conf import settings
 from crew.metrics.httpapi import HttpAPI
 from datetime import datetime
+from random import random
 import json
 
 
@@ -16,17 +17,17 @@ def view(request):
     return render_to_response('olde/view.html',
         context_instance=RequestContext(request))
 
-
 def json_view(request):
-    if not request.method == 'POST':
+#		return HttpResponse(json.dumps(request.GET), mimetype='text/json')
+    if not request.method == 'GET':
         return HttpResponse('')
     # Parse query.
-    ns = request.POST['ns']
-    start = float(request.POST['start'])
-    end = float(request.POST['end'])
+    ns = request.GET['ns']
+    start = float(request.GET['start'])
+    end = float(request.GET['end'])
     interval = 1 # TODO
     # Retrieve data.
-    api = HttpAPI(namespace=ns, apikey='test', url=settings.FLAMONGO_ENDPOINT)
+    api = HttpAPI(namespace="windows", apikey='test', url=settings.FLAMONGO_ENDPOINT)
     ret = api.retrieve(start_time=start, end_time=end, interval=interval)
     # XXX Begin hack
     acc = {}
