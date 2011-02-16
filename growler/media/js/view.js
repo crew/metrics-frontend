@@ -55,7 +55,7 @@ labMetrics.create_chart = function (data) {
             var d = new Date(this.x);
             var s = 'There were <b>'+this.y+'</b> computers in use <br/> on: <b>'+
                  (d.getMonth()+1)+'/'+d.getDate()+'/'+d.getFullYear()+'</b> at <b>'+
-                 d.getHours()+':'+d.getMinutes()+'</b>';
+                 ('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2)+'</b>';
             return s;
           }
         , shared: true
