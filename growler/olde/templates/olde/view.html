@@ -1,92 +1,36 @@
 {% extends "base.html" %}
-{% block scripts %}
-<script type="text/javascript" src="http://www.google.com/jsapi"></script>
-<script type="text/javascript">
-google.load("jquery", "1");
-</script>
-<script type="text/javascript" src="{% url media "js/highcharts.js" %}"></script>
+{% block title %}View{% endblock %}
 
-<script type="text/javascript">
-var tz_offset = new Date().getTimezoneOffset() * 60;
-function create_chart(data) {
-  var last;
-  var start = null;
-  for (var i in data) {
-    // For new Date(float) the unit is in milliseconds instead of seconds.
-    // Account for timezone offset.
-    data[i].x = (data[i].timestamp - tz_offset) * 1000;
-    data[i].y = data[i].count;
-    data[i].name = new Date(data[i].x);
-    if (!start) {
-      start = data[i].x;
-    }
-    last = data[i].x;
-  }
-  // Create the chart.
-  Highcharts.Chart({
-    credits: {text: "crew", href: "."},
-    chart: {
-      // the id of the div element for drawing the graph.
-      renderTo: "graph",
-      // The type of the graph.
-      defaultSeriesType: "line"
-    },
-    // The title.
-    title: {text: ""},
-    // The list of "series" (a line you see on the graph).
-    series: [{
-      name: "Blah",
-      data: data
-    }],
-    xAxis: {
-      labels: {
-        enabled: true,
-        formatter: function() {
-          // The formatting function for the x-axis.
-          var x = new Date(this.value);
-          // TODO FIXME
-          return "" + x.getHours() + ":" + x.getMinutes() + ":"
-            + x.getSeconds();
-        }
-      }
-    },
-    plotOptions: {
-      line: {
-        pointStart: start,
-      }
-    }
-  });
-}
+{% block styles %}
+  <link href="{% url media "css/datepicker.css" %}" rel="stylesheet" type="text/css">
+{% endblock%}
 
-$(document).ready(function() {
-  // TODO Make the namespace selectable.
-  var ns = "ns";
-  // TODO get the start/end times from a form.
-  var end = new Date().getTime() / 1000.0 - tz_offset;
-  var start = end - 100000 - tz_offset;
-  $("#fetch").click(function (e) {
-    e.preventDefault();
-    $.ajax({
-      type: "POST",
-      url: "{% url json-view %}",
-      success: create_chart,
-      data: {
-        'ns': ns,
-        'start': start,
-        'end': end,
-      }
-    });
-  });
-  $("#fetch").click();
-});
-</script>
 
-{% endblock %}
+{% block header %}Views{% endblock %}
 
 {% block content %}
+  <p>Select a starting time and ending time and hit fetch to load a graph with the windows computers lab usage.</p>
+  <br>
+  <input id="start" type="text">
+  <input id="end" type="text">
+  <br><br>
+  <button id="fetch" type="button" class="css3button">Fetch</button>
+  <br><br>
+  <div id="graph"></div>
+  <br><br>
+{% endblock %}
 
-<a id="fetch" href="#">fetch</a>
+{% block scripts-body %}
+  <script type="text/javascript" src="{% url media "js/highcharts.js" %}"></script>
+  <script type="text/javascript" src="{% url media "js/view.js" %}"></script>
+  <script type="text/javascript" src="{% url media "js/themes/gray.js" %}"></script>
+  <script type="text/javascript" src="{% url media "js/modules/exporting.js" %}"></script>
+  <script>labMetrics.run("{% url json-view %}")</script>
+{% endblock %}
 
-<div id="graph"></div>
 
+{% block footer %}
+<a href="http://crew.ccs.neu.edu/">Crew</a>
+<a href="http://crew.ccs.neu.edu/docs/metrics/api/">Lab Metrics API</a>
+<a href="http://www.highcharts.com/ref/">Highcharts Reference</a>
 {% endblock %}

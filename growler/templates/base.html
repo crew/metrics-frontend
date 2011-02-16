@@ -1,14 +1,40 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<!DOCTYPE html>
+    
+<html>
 <head>
   <!--<link rel="stylesheet" href="style.css"/>-->
   <title>{% block title %}Lab Metrics{% endblock %}</title>
-  {% block styles %}{% endblock %}
-  {% block scripts %}{% endblock %}
+  
+  <link href="{% url media "css/style.css" %}" rel="stylesheet" type="text/css">
+  <link href="{% url media "css/smoothness/jquery-ui-1.8.9.custom.css" %}" rel="stylesheet">
+  {% block styles %} {% endblock %}
+
+  <script src="{% url media "js/modernizr.js" %}"></script>
+  {% block scripts-header %}{% endblock %}
 </head>
 
 <body>
-<div id="content">{% block content %}{% endblock %}</div>
+  <header><h1>{% block header %}{% endblock %}</h1></header>
+  <nav>{% block nav %}{% endblock %}</nav>
+
+  <div id="content">{% block content %}{% endblock %}</div>
+  
+  <footer>{% block footer %}{% endblock %}</footer>
+
+
+  <!-- Grab Google CDN's jQuery. fall back to local if necessary -->
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.5.0/jquery.min.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/jquery-ui.min.js"></script>
+  <script src="{% url media "js/jquery-ui-timepicker-addon.js" %}"></script>
+  <script>
+    if(!window.jQuery) {
+      var s = document.createElement('script')
+      s.src = "{% url media "js/jquery.min.js" %}"
+      document.body.appendChild(s)
+    }
+  </script>
+
+  {% block scripts-body %} {% endblock %}
+
 </body>
 </html>
