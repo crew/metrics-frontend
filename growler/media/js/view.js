@@ -46,7 +46,7 @@ labMetrics.create_chart = function (data) {
         , defaultSeriesType: "line"
         , marginRight: 170
         , marginBottom: 100
-        , width: 800
+        , width: 980
         , zoomType: 'x'
         }
       // The title.

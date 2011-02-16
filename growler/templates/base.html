@@ -6,6 +6,7 @@
   <title>{% block title %}Lab Metrics{% endblock %}</title>
   
   <link href="{% url media "css/style.css" %}" rel="stylesheet" type="text/css">
+  <link href="{% url media "css/site.css" %}" rel="stylesheet" type="text/css">
   <link href="{% url media "css/smoothness/jquery-ui-1.8.9.custom.css" %}" rel="stylesheet">
   {% block styles %} {% endblock %}
 
@@ -14,12 +15,14 @@
 </head>
 
 <body>
-  <header><h1>{% block header %}{% endblock %}</h1></header>
-  <nav>{% block nav %}{% endblock %}</nav>
+  <div id="container">
+    <header><h1>{% block header %}{% endblock %}</h1></header>
+    <nav>{% block nav %}{% endblock %}</nav>
 
-  <div id="content">{% block content %}{% endblock %}</div>
-  
-  <footer>{% block footer %}{% endblock %}</footer>
+    <div id="main"><article>{% block content %}{% endblock %}</article></div>
+    
+    <footer>{% block footer %}{% endblock %}</footer>
+  </div>
 
 
   <!-- Grab Google CDN's jQuery. fall back to local if necessary -->
