@@ -1,21 +1,22 @@
 {% extends "base.html" %}
-{% block title %}View{% endblock %}
+{% block title %}Lab Metrics - Windows Usage Data{% endblock %}
 
 {% block styles %}
   <link href="{% url media "css/datepicker.css" %}" rel="stylesheet" type="text/css">
 {% endblock%}
 
 
-{% block header %}Views{% endblock %}
+{% block header %}Lab Metrics - Windows Usage Data{% endblock %}
 
 {% block content %}
-  <p>Select a starting time and ending time and hit fetch to load a graph with the windows computers lab usage.</p>
+  <p>Select a start time and end time and hit &quot;fetch&quot; to load a graph with the Windows computer lab usage data.</p>
+  <p>Auto reloads <dfn title="Data from 24 hours ago to now">daily data</dfn> every 10 minutes.</p>
   <br>
   <input id="start" type="text">
   <input id="end" type="text">
-  <button id="reload" type="checkbox" style="border:0; color:#AEAEAE; background: none;">Reloading...</button>
   <br><br>
   <button id="fetch" type="button" class="css3button">Fetch</button>
+  <button id="reload" type="checkbox" class="css3button" style="color: #000; margin-left: 10px; padding: 5px 10px; border: 1px solid #000; font-weight: bold; background: none;">Auto Reloading ON.</button>
   <br><br>
   <div id="graph"></div>
   <br>
