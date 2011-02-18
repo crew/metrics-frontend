@@ -53,7 +53,7 @@ labMetrics.create_chart = function (data) {
     , tooltip: {
           formatter: function(){
             var d = new Date(this.x);
-            var s = 'There were <b>'+this.y+'</b> computers in use <br/> on: <b>'+
+            var s = 'There were <b>'+this.y+'</b> computers in use <br/>on: <b>'+
                  (d.getMonth()+1)+'/'+d.getDate()+'/'+d.getFullYear()+'</b> at <b>'+
                  ('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2)+'</b>';
             return s;
@@ -110,8 +110,6 @@ labMetrics.reloadChart = function(start, end){
   var stime
     , etime
     , ns = "ns";
-
-  debugger;
 
   start && labMetrics.start.datetimepicker('setDate', start);
   end && labMetrics.end.datetimepicker('setDate', end);
