@@ -17,8 +17,20 @@ def view(request):
     return render_to_response('olde/view.html',
         context_instance=RequestContext(request))
 
+def json_view_all(request):
+    if not request.method == 'GET':
+        return HttpResponse('')
+    # Parse query.
+    ns = request.GET['ns']
+    start = float(request.GET['start'])
+    end = float(request.GET['end'])
+    interval = 1 # TODO
+    # Retrieve data.
+    api = HttpAPI(namespace="windows", apikey='test', url=settings.FLAMONGO_ENDPOINT)
+    ret = api.retrieve(start_time=start, end_time=end, interval=interval)
+    return HttpResponse(json.dumps(ret), mimetype='text/json')
+    
 def json_view(request):
-#		return HttpResponse(json.dumps(request.GET), mimetype='text/json')
     if not request.method == 'GET':
         return HttpResponse('')
     # Parse query.
@@ -32,6 +44,7 @@ def json_view(request):
     # XXX Begin hack
     acc = {}
     for x in ret:
+        print x
         try:
             acc[x['timestamp']].append(x)
         except KeyError:
