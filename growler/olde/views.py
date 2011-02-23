@@ -24,18 +24,20 @@ def windows(request):
     return render_to_response('olde/windows.html',
         context_instance=RequestContext(request))
 
+def get_windows_machines():
+    hb = ccs.hostbase.HostBase()
+    for r in hb.GetRecords():
+        if r['room'] == '102' and 'window' in r['os'].lower():
+            yield r['hostname'].split('.')[0]
+
 def json_windows_machines(request):
     if not request.method == 'GET':
         return HttpResponse('');
-    hb = ccs.hostbase.HostBase()
-    machines = [r['hostname'].split('.')[0] for r in hb.GetRecords() if r['room'] == '102' and 'window' in r['os'].lower()]
-    return HttpResponse(json.dumps(machines), mimetype='text/json')
+    return HttpResponse(json.dumps(list(get_windows_machines())), mimetype='text/json')
 
 def json_windows_machines_data(request):
     if not request.method == 'GET':
         return HttpResponse('');
-    hb = ccs.hostbase.HostBase()
-    machines = [r['hostname'].split('.')[0] for r in hb.GetRecords() if r['room'] == '102' and 'window' in r['os'].lower()]
     ns = request.GET['ns']
     start = float(request.GET['start'])
     end = float(request.GET['end'])
@@ -44,7 +46,7 @@ def json_windows_machines_data(request):
     api = HttpAPI(namespace="windows", apikey='test', url=settings.FLAMONGO_ENDPOINT)
     ret = api.retrieve(start_time=start, end_time=end, interval=interval)
 
-    output = {'machines': machines, 'data': ret}
+    output = {'machines': list(get_windows_machines()), 'data': ret}
     return HttpResponse(json.dumps(output), mimetype='text/json')
 
 def json_view_all(request):
