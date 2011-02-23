@@ -62,7 +62,9 @@ labMetrics.create_chart = function (data) {
 		, xAxis: {
 					categories: machines
 				,	labels: {
-							staggerLines: 3
+              rotation: -45
+						//,	staggerLines: 3
+            , align: 'right'
 						}
 			}
     , yAxis: {

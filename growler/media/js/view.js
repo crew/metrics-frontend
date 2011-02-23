@@ -52,10 +52,17 @@ labMetrics.create_chart = function (data) {
       // The title.
     , tooltip: {
           formatter: function(){
-            var d = new Date(this.x);
-            var s = 'There were <b>'+this.y+'</b> computers in use <br/>on: <b>'+
-                 (d.getMonth()+1)+'/'+d.getDate()+'/'+d.getFullYear()+'</b> at <b>'+
-                 ('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2)+'</b>';
+            console.log(this.series);
+            var windows, linux, d, i, l, s;
+            for(i = 0, l = this.points.length; i < l; ++i){
+              if(this.points[i].point.name == 'windows') windows = this.points[i];
+              else if(this.points[i].point.name == 'linux') linux = this.points[i];
+            }
+            d = new Date(this.x);
+            s = d.toString().split(' GMT')[0] +//(d.getMonth()+1)+'/'+d.getDate()+'/'+d.getFullYear()+' at '+
+                //('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2)+'<br>'+
+                '<br>Linux: <b>'+linux.y+'</b><br>'+
+                'Windows: <b>'+windows.y+'</b>';
             return s;
           }
         , shared: true
@@ -64,13 +71,21 @@ labMetrics.create_chart = function (data) {
       // The list of "series" (a line you see on the graph).
     , series: [{
           name: "Windows"
-        , data: data
+        , data: $.map(data, function(el, i){ return $.extend(true, {}, el, {name: 'windows'});})
+        }
+        , {
+            name: "Linux"
+          , data: $.map(data, function(el, i){
+                return $.extend(true, {}, el, {name: 'linux', y: ~~((5/2)*el.y)});
+            })
         }]
     , xAxis: {
           type: 'datetime'
         , labels: {
               enabled: true
-            , staggerLines: 2
+            //, staggerLines: 2
+            , rotation: -45
+            , align: 'right'
             , formatter: function(){
                 var d = new Date(this.value);
                 return ''+Highcharts.dateFormat('%d %b', d)+'-'+
