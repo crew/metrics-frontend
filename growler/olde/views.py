@@ -6,6 +6,9 @@ from crew.metrics.httpapi import HttpAPI
 from datetime import datetime
 from random import random
 import json
+import sys
+sys.path.append('/net/ccs/lib/python/')
+import ccs.hostbase
 
 
 def index(request):
@@ -16,6 +19,18 @@ def index(request):
 def view(request):
     return render_to_response('olde/view.html',
         context_instance=RequestContext(request))
+
+def windows(request):
+    return render_to_response('olde/windows.html',
+        context_instance=RequestContext(request))
+
+def json_windows_machines(request):
+    if not request.method == 'GET':
+        return HttpResponse('');
+    hb = ccs.hostbase.HostBase()
+    machines = [r['hostname'].split('.')[0] for r in hb.GetRecords() if r['room'] == '102' and 'windows' in r['os'].lower()]
+
+    return HttpResponse(json.dumps(machines), mimetype='text/json')
 
 def json_view_all(request):
     if not request.method == 'GET':
@@ -44,7 +59,7 @@ def json_view(request):
     # XXX Begin hack
     acc = {}
     for x in ret:
-        print x
+        #print x
         try:
             acc[x['timestamp']].append(x)
         except KeyError:
