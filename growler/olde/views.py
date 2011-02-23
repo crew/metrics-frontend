@@ -28,9 +28,24 @@ def json_windows_machines(request):
     if not request.method == 'GET':
         return HttpResponse('');
     hb = ccs.hostbase.HostBase()
-    machines = [r['hostname'].split('.')[0] for r in hb.GetRecords() if r['room'] == '102' and 'windows' in r['os'].lower()]
-
+    machines = [r['hostname'].split('.')[0] for r in hb.GetRecords() if r['room'] == '102' and 'window' in r['os'].lower()]
     return HttpResponse(json.dumps(machines), mimetype='text/json')
+
+def json_windows_machines_data(request):
+    if not request.method == 'GET':
+        return HttpResponse('');
+    hb = ccs.hostbase.HostBase()
+    machines = [r['hostname'].split('.')[0] for r in hb.GetRecords() if r['room'] == '102' and 'window' in r['os'].lower()]
+    ns = request.GET['ns']
+    start = float(request.GET['start'])
+    end = float(request.GET['end'])
+    interval = 1 # TODO
+    # Retrieve data.
+    api = HttpAPI(namespace="windows", apikey='test', url=settings.FLAMONGO_ENDPOINT)
+    ret = api.retrieve(start_time=start, end_time=end, interval=interval)
+
+    output = {'machines': machines, 'data': ret}
+    return HttpResponse(json.dumps(output), mimetype='text/json')
 
 def json_view_all(request):
     if not request.method == 'GET':
