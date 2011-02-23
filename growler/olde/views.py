@@ -5,6 +5,7 @@ from django.conf import settings
 from crew.metrics.httpapi import HttpAPI
 from datetime import datetime
 from random import random
+from decorators import default_json_get
 import json
 import sys
 sys.path.append('/net/ccs/lib/python/')
@@ -35,12 +36,8 @@ def json_windows_machines(request):
         return HttpResponse('');
     return HttpResponse(json.dumps(list(get_windows_machines())), mimetype='text/json')
 
-def json_windows_machines_data(request):
-    if not request.method == 'GET':
-        return HttpResponse('');
-    ns = request.GET['ns']
-    start = float(request.GET['start'])
-    end = float(request.GET['end'])
+@default_json_get
+def json_windows_machines_data(request, ns, start, end):
     interval = 1 # TODO
     # Retrieve data.
     api = HttpAPI(namespace="windows", apikey='test', url=settings.FLAMONGO_ENDPOINT)
@@ -49,26 +46,16 @@ def json_windows_machines_data(request):
     output = {'machines': list(get_windows_machines()), 'data': ret}
     return HttpResponse(json.dumps(output), mimetype='text/json')
 
-def json_view_all(request):
-    if not request.method == 'GET':
-        return HttpResponse('')
-    # Parse query.
-    ns = request.GET['ns']
-    start = float(request.GET['start'])
-    end = float(request.GET['end'])
+@default_json_get
+def json_view_all(request, ns, start, end):
     interval = 1 # TODO
     # Retrieve data.
     api = HttpAPI(namespace="windows", apikey='test', url=settings.FLAMONGO_ENDPOINT)
     ret = api.retrieve(start_time=start, end_time=end, interval=interval)
     return HttpResponse(json.dumps(ret), mimetype='text/json')
-    
-def json_view(request):
-    if not request.method == 'GET':
-        return HttpResponse('')
-    # Parse query.
-    ns = request.GET['ns']
-    start = float(request.GET['start'])
-    end = float(request.GET['end'])
+
+@default_json_get
+def json_view(request, ns, start, end):
     interval = 1 # TODO
     # Retrieve data.
     api = HttpAPI(namespace="windows", apikey='test', url=settings.FLAMONGO_ENDPOINT)
