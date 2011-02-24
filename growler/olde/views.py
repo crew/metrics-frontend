@@ -75,3 +75,10 @@ def json_view(request, ns, start, end):
     # XXX End hack
     # return as JSON.
     return HttpResponse(json.dumps(y), mimetype='text/json')
+
+#TODO: Write KML Views
+def kml_windows_current(request):
+    return HttpResponse('')
+
+def kml_windows_historical(request):
+    return HttpResponse('')
