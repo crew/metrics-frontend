@@ -17,7 +17,12 @@
 <body>
   <div id="container">
     <header><h1>{% block header %}{% endblock %}</h1></header>
-    <nav>{% block nav %}{% endblock %}</nav>
+    <nav>
+    <ul>
+      <li><a href="{% url view %}">View</a></li
+     ><li><a href="{% url windows %}">Windows</a></li>
+    </ul>
+    {% block nav %}{% endblock %}</nav>
 
     <div id="main"><article>{% block content %}{% endblock %}</article></div>
     

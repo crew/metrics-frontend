@@ -69,7 +69,7 @@ labMetrics.create_chart = function (data) {
 			}
     , yAxis: {
           title: {
-              text: 'Computers In Use'
+              text: 'Total Usage'
         }
         , plotLines: [{
               value: 0
