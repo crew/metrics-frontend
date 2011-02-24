@@ -64,7 +64,8 @@ labMetrics.reloadChart = function(start, end){
 
 labMetrics.run = function(jsonViewUrl){
   var last24 = labMetrics.getLast24()
-    , reload = $('#reload');
+    , reload = $('#reload')
+    , intervalId;
 
   labMetrics.jsonViewUrl = jsonViewUrl;
 
@@ -82,6 +83,7 @@ labMetrics.run = function(jsonViewUrl){
     if(labMetrics.reload) {
       labMetrics.reload = false;
       reload.html('Auto Reloading OFF.');
+      window.clearTimeout(intervalId);
     }
     else {
       labMetrics.reload = true;
@@ -100,8 +102,7 @@ labMetrics.run = function(jsonViewUrl){
   function loop(){
     var last24 = labMetrics.getLast24();
     labMetrics.reloadChart(last24.dayAgo, last24.now);
-
-    labMetrics.reload && setTimeout(loop, 600000);
+    labMetrics.reload && intervalId = window.setTimeout(loop, 600000);
   }
   loop();
 };
