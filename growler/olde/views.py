@@ -40,7 +40,7 @@ def json_windows_machines(request):
 def json_windows_machines_data(request, ns, start, end):
     interval = 1 # TODO
     # Retrieve data.
-    api = HttpAPI(namespace="windows", apikey='test', url=settings.FLAMONGO_ENDPOINT)
+    api = HttpAPI(namespace=ns, apikey='test', url=settings.FLAMONGO_ENDPOINT)
     ret = api.retrieve(start_time=start, end_time=end, interval=interval)
 
     output = {'machines': list(get_windows_machines()), 'data': ret}
@@ -50,7 +50,7 @@ def json_windows_machines_data(request, ns, start, end):
 def json_view_all(request, ns, start, end):
     interval = 1 # TODO
     # Retrieve data.
-    api = HttpAPI(namespace="windows", apikey='test', url=settings.FLAMONGO_ENDPOINT)
+    api = HttpAPI(namespace=ns, apikey='test', url=settings.FLAMONGO_ENDPOINT)
     ret = api.retrieve(start_time=start, end_time=end, interval=interval)
     return HttpResponse(json.dumps(ret), mimetype='text/json')
 

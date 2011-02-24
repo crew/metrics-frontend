@@ -95,7 +95,7 @@ labMetrics.create_chart = function (data) {
 labMetrics.reloadChart = function(start, end){
   var stime
     , etime
-    , ns = "ns";
+    , ns = "windows";
 
   start && labMetrics.start.datetimepicker('setDate', start);
   end && labMetrics.end.datetimepicker('setDate', end);
