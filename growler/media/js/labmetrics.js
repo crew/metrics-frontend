@@ -102,7 +102,7 @@ labMetrics.run = function(jsonViewUrl){
   function loop(){
     var last24 = labMetrics.getLast24();
     labMetrics.reloadChart(last24.dayAgo, last24.now);
-    labMetrics.reload && intervalId = window.setTimeout(loop, 600000);
+    labMetrics.reload && (intervalId = window.setTimeout(loop, 600000));
   }
   loop();
 };
