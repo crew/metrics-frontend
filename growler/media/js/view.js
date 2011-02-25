@@ -1,20 +1,29 @@
-labMetrics.create_chart = function (data) {
-  //console.log(data);
+labMetrics.create_chart = function (givendata) {
   var last
     , start = null
     , i
-    , x;
-  for (i = 0, l = data.length; i < l; i++) {
+    , x
+    , data = []
+    , tenmins = 60*10*1000;
+
+  //for (i = 0, l = data.length; i < l; i++) {
     // For new Date(float) the unit is in milliseconds instead of seconds.
     // Account for timezone offset.
-    data[i].x = (data[i].timestamp - labMetrics.tz_offset) * 1000;
-    data[i].y = data[i].count;
-    data[i].name = new Date(data[i].x);
-    if (!start) {
-      start = data[i].x;
-    }
-    last = data[i].x;
-  }
+  $.map(givendata, function(el, i){
+      var time = (givendata[i].timestamp - labMetrics.tz_offset) * 1000
+        , current = {};
+
+      current.x = time;
+      current.y = givendata[i].count;
+      current.name = new Date(time);
+
+      if (!start) {
+        start = current.x;
+      }
+      last = current.x
+      data[data.length] = current;
+  });
+
   // Create the chart.
   labMetrics.chart = new Highcharts.Chart({
       credits: {text: "crew", href: "."}
@@ -31,17 +40,15 @@ labMetrics.create_chart = function (data) {
       // The title.
     , tooltip: {
           formatter: function(){
-            console.log(this.series);
             var windows, linux, d, i, l, s;
             for(i = 0, l = this.points.length; i < l; ++i){
               if(this.points[i].point.name == 'windows') windows = this.points[i];
               else if(this.points[i].point.name == 'linux') linux = this.points[i];
             }
             d = new Date(this.x);
-            s = d.toString().split(' GMT')[0] +//(d.getMonth()+1)+'/'+d.getDate()+'/'+d.getFullYear()+' at '+
-                //('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2)+'<br>'+
-                '<br>Linux: <b>'+linux.y+'</b><br>'+
-                'Windows: <b>'+windows.y+'</b>';
+            s = d.toString().split(' GMT')[0] +
+                (linux ? '<br>Linux: <b>'+linux.y+'</b>' : '') +
+                (windows ? '<br>Windows: <b>'+windows.y+'</b>' : '');
             return s;
           }
         , shared: true
@@ -55,7 +62,7 @@ labMetrics.create_chart = function (data) {
         , {
             name: "Linux"
           , data: $.map(data, function(el, i){
-                return $.extend(true, {}, el, {name: 'linux', y: ~~((5/2)*el.y)});
+                return $.extend(true, {}, el, {name: 'linux', y: 0/*~~((5/2)*el.y)*/});
             })
         }]
     , xAxis: {
