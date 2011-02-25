@@ -63,7 +63,6 @@ def json_view(request, ns, start, end):
     # XXX Begin hack
     acc = {}
     for x in ret:
-        #print x
         try:
             acc[x['timestamp']].append(x)
         except KeyError:
@@ -72,9 +71,19 @@ def json_view(request, ns, start, end):
     for k, values in acc.items():
         count = len(values)
         y.append({'timestamp': k, 'count': count})
+    y.sort(key=lambda r: r['timestamp'])
+    output = []
+    for r in y:
+        lastIndex = y.index(r)-1
+        if lastIndex >= 0:
+            last = y[lastIndex]['timestamp']
+            if r['timestamp']-last > 700:
+                output.append({'timestamp': r['timestamp']-600, 'count': 0})
+                output.append({'timestamp': last+600, 'count': 0})
+            output.append(r);
     # XXX End hack
     # return as JSON.
-    return HttpResponse(json.dumps(y), mimetype='text/json')
+    return HttpResponse(json.dumps(output), mimetype='text/json')
 
 #TODO: Write KML Views
 def kml_windows_current(request):
