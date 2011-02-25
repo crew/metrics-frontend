@@ -62,7 +62,7 @@ labMetrics.create_chart = function (givendata) {
         , {
             name: "Linux"
           , data: $.map(data, function(el, i){
-                return $.extend(true, {}, el, {name: 'linux', y: 0/*~~((5/2)*el.y)*/});
+                return $.extend(true, {}, el, {name: 'linux', y: ~~((5/2)*el.y)});
             })
         }]
     , xAxis: {
