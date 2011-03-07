@@ -3,6 +3,7 @@ from django.template import RequestContext
 from django.http import HttpResponse
 from django.conf import settings
 from crew.metrics.httpapi import HttpAPI
+import time
 from datetime import datetime
 from random import random
 from decorators import default_json_get
@@ -83,6 +84,57 @@ def json_view(request, ns, start, end):
             output.append(r);
     # XXX End hack
     # return as JSON.
+    return HttpResponse(json.dumps(output), mimetype='text/json')
+
+def json_linux_local_data(request):
+    ns = 'linux'
+    start = float(request.GET['start'])
+    end = float(request.GET['end'])
+#    interval = int(request.GET['interval'])
+    interval = 600
+    api = HttpAPI(namespace=ns, apikey='test', url=settings.FLAMONGO_ENDPOINT)
+    s = datetime.utcfromtimestamp(start)
+    s = datetime(s.year, s.month, s.day, 0, 0) # Get the start of day.
+    s = time.mktime(s.timetuple())
+    ret = api.retrieve(start_time=s, end_time=end, interval=interval,
+        attributes={'is_local': True})
+    # Fetch the reboot events.
+    reboots = api.retrieve(start_time=s, end_time=end, interval=interval,
+        attributes={'event': 'reboot'})
+    # Merge then sort the results
+    ret = list(ret) + list(reboots)
+    ret.sort(key=lambda x: x['timestamp'])
+    def get_n(x):
+        # The nth interval.
+        return int(x - start) // interval
+    current_hosts = set()
+    current_n = 0
+    counts = []
+    #
+    for record in ret:
+        if record['timestamp'] >= start:
+            n = get_n(record['timestamp'])
+            if n > current_n:
+                for i in range(current_n, n):
+                    counts.append(len(current_hosts))
+                current_n = n
+        if record['event'] == 'login':
+            current_hosts.add(record['hostname'])
+        else:
+            if record['hostname'] in current_hosts:
+                current_hosts.remove(record['hostname'])
+    # Add the tail.
+    for i in range(current_n, get_n(end)):
+        counts.append(len(current_hosts))
+    output = []
+    def get_t(start=start, interval=interval):
+        # Generate the times.
+        x = start
+        while True:
+            yield start
+            start += interval
+    for c, ts in zip(counts, get_t()):
+        output.append({'timestamp': ts, 'count': c})
     return HttpResponse(json.dumps(output), mimetype='text/json')
 
 #TODO: Write KML Views
