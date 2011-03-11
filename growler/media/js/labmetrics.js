@@ -54,7 +54,7 @@ labMetrics.reloadChart = function(start, end){
       , success: labMetrics.create_chart
       , complete: function(){ $('#fetch').html('Fetch'); }
       , data: {
-            'ns': ns
+            'ns': labMetrics.namespace
           , 'start': stime.getTime()/1000
           , 'end': etime.getTime()/1000
         }
@@ -62,12 +62,13 @@ labMetrics.reloadChart = function(start, end){
     }
 };
 
-labMetrics.run = function(jsonViewUrl){
+labMetrics.run = function(jsonViewUrl, namespace){
   var last24 = labMetrics.getLast24()
     , reload = $('#reload')
     , intervalId;
 
   labMetrics.jsonViewUrl = jsonViewUrl;
+  labMetrics.namespace = namespace;
 
   labMetrics.start = $('#start');
   labMetrics.end = $('#end');

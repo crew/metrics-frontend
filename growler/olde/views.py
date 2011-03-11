@@ -17,7 +17,6 @@ def index(request):
     return render_to_response('olde/index.html',
         context_instance=RequestContext(request))
 
-
 def view(request):
     return render_to_response('olde/view.html',
         context_instance=RequestContext(request))
@@ -26,39 +25,34 @@ def windows(request):
     return render_to_response('olde/windows.html',
         context_instance=RequestContext(request))
 
+def linux(request):
+    return render_to_response('olde/linux.html',
+        context_instance=RequestContext(request))
+
 def get_windows_machines():
     hb = ccs.hostbase.HostBase()
     for r in hb.GetRecords():
         if r['room'] == '102' and 'window' in r['os'].lower():
             yield r['hostname'].split('.')[0]
 
+def get_linux_machines():
+    hb = ccs.hostbase.HostBase()
+    for r in hb.GetRecords():
+        if r['room'] == '102' and 'ubuntu' in r['os'].lower():
+            yield r['hostname'].split('.')[0]
+
 def json_windows_machines(request):
     if not request.method == 'GET':
-        return HttpResponse('');
+        return HttpResponse('')
     return HttpResponse(json.dumps(list(get_windows_machines())), mimetype='text/json')
 
-@default_json_get
-def json_windows_machines_data(request, ns, start, end):
-    interval = 1 # TODO
-    # Retrieve data.
-    api = HttpAPI(namespace=ns, apikey='test', url=settings.FLAMONGO_ENDPOINT)
-    ret = api.retrieve(start_time=start, end_time=end, interval=interval)
+def json_linux_machines(request):
+    if not request.method == 'GET':
+        return HttpResponse('')
+    return HttpResponse(json.dumps(list(get_linux_machines())), mimetype='text/json')
 
-    output = {'machines': list(get_windows_machines()), 'data': ret}
-    return HttpResponse(json.dumps(output), mimetype='text/json')
-
-@default_json_get
-def json_view_all(request, ns, start, end):
+def windows_data(start, end):
     interval = 1 # TODO
-    # Retrieve data.
-    api = HttpAPI(namespace=ns, apikey='test', url=settings.FLAMONGO_ENDPOINT)
-    ret = api.retrieve(start_time=start, end_time=end, interval=interval)
-    return HttpResponse(json.dumps(ret), mimetype='text/json')
-
-@default_json_get
-def json_view(request, ns, start, end):
-    interval = 1 # TODO
-    # Retrieve data.
     api = HttpAPI(namespace="windows", apikey='test', url=settings.FLAMONGO_ENDPOINT)
     ret = api.retrieve(start_time=start, end_time=end, interval=interval)
     # XXX Begin hack
@@ -83,16 +77,15 @@ def json_view(request, ns, start, end):
                 output.append({'timestamp': last+600, 'count': 0})
             output.append(r);
     # XXX End hack
-    # return as JSON.
-    return HttpResponse(json.dumps(output), mimetype='text/json')
+    return output
 
-def json_linux_local_data(request):
-    ns = 'linux'
-    start = float(request.GET['start'])
-    end = float(request.GET['end'])
+def linux_local_data(start, end):
+    #ns = 'linux'
+    #start = float(request.GET['start'])
+    #end = float(request.GET['end'])
 #    interval = int(request.GET['interval'])
     interval = 600
-    api = HttpAPI(namespace=ns, apikey='test', url=settings.FLAMONGO_ENDPOINT)
+    api = HttpAPI(namespace='linux', apikey='test', url=settings.FLAMONGO_ENDPOINT)
     s = datetime.utcfromtimestamp(start)
     s = datetime(s.year, s.month, s.day, 0, 0) # Get the start of day.
     s = time.mktime(s.timetuple())
@@ -135,6 +128,62 @@ def json_linux_local_data(request):
             start += interval
     for c, ts in zip(counts, get_t()):
         output.append({'timestamp': ts, 'count': c})
+    return output
+
+@default_json_get
+def json_windows_machines_data(request, ns, start, end):
+    interval = 1 # TODO
+    # Retrieve data.
+    api = HttpAPI(namespace=ns, apikey='test', url=settings.FLAMONGO_ENDPOINT)
+    ret = api.retrieve(start_time=start, end_time=end, interval=interval)
+
+    output = {'machines': list(get_windows_machines()), 'data': ret}
+    return HttpResponse(json.dumps(output), mimetype='text/json')
+
+@default_json_get
+def json_linux_machines_data(request, ns, start, end):
+    interval = 1 # TODO
+    # Retrieve data.
+    api = HttpAPI(namespace=ns, apikey='test', url=settings.FLAMONGO_ENDPOINT)
+    ret = api.retrieve(start_time=start, end_time=end, interval=interval)
+
+    for r in ret:
+        r['hostname'] = r['hostname'].split('.')[0]
+
+    output = {'machines': list(get_linux_machines()), 'data': ret}
+    return HttpResponse(json.dumps(output), mimetype='text/json')
+
+@default_json_get
+def json_view_all(request, ns, start, end):
+    interval = 1 # TODO
+    # Retrieve data.
+    api = HttpAPI(namespace=ns, apikey='test', url=settings.FLAMONGO_ENDPOINT)
+    ret = api.retrieve(start_time=start, end_time=end, interval=interval)
+    return HttpResponse(json.dumps(ret), mimetype='text/json')
+
+@default_json_get
+def json_view(request, ns, start, end):
+    interval = 1 # TODO
+    if 'window' in ns.lower():
+        return json_view_windows(request, ns, start, end)
+    elif 'linux' in ns.lower():
+        return json_linux_local_data(request)
+    else: #'all' in ns.lower():
+        output_windows = windows_data(start, end)
+        output_linux = linux_local_data(start, end)
+        output = { 'linux': output_linux, 'windows': output_windows } 
+        return HttpResponse(json.dumps(output), mimetype='text/json')
+
+@default_json_get
+def json_view_windows(request, ns, start, end):
+    # Retrieve data.
+    output = windows_data(start, end)
+    # return as JSON.
+    return HttpResponse(json.dumps(output), mimetype='text/json')
+
+@default_json_get
+def json_linux_local_data(request, ns, start, end):
+    output = linux_local_data(start, end)
     return HttpResponse(json.dumps(output), mimetype='text/json')
 
 #TODO: Write KML Views

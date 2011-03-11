@@ -20,13 +20,20 @@
     <nav>
     <ul>
       <li><a href="{% url view %}">View</a></li
-     ><li><a href="{% url windows %}">Windows</a></li>
+     ><li><a href="{% url windows %}">Windows</a></li
+     ><li><a href="{% url linux %}">Linux</a></li
+     >
     </ul>
     {% block nav %}{% endblock %}</nav>
 
     <div id="main"><article>{% block content %}{% endblock %}</article></div>
     
-    <footer>{% block footer %}{% endblock %}</footer>
+    <footer>
+      <a href="http://crew.ccs.neu.edu/">Crew</a>
+      <a href="http://crew.ccs.neu.edu/docs/metrics/api/">Lab Metrics API</a>
+      <a href="http://www.highcharts.com/ref/">Highcharts Reference</a>
+      {% block footer %}{% endblock %}
+    </footer>
   </div>
 
 
