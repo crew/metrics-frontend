@@ -145,7 +145,8 @@ def json_linux_machines_data(request, ns, start, end):
     interval = 1 # TODO
     # Retrieve data.
     api = HttpAPI(namespace=ns, apikey='test', url=settings.FLAMONGO_ENDPOINT)
-    ret = api.retrieve(start_time=start, end_time=end, interval=interval)
+    ret = api.retrieve(start_time=start, end_time=end, interval=interval,
+        attributes={'is_local': True})
 
     for r in ret:
         r['hostname'] = r['hostname'].split('.')[0]
