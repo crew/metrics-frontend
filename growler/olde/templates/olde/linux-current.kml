@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+  <Document>
+    <name>CCIS Linux Computers</name>
+    <description></description>
+    <NetworkLink>
+	<name>Computers NetworkLink</name>
+    	<Link>
+		<href>{{absurl}}{% url kml-linux-current-dynamic %}</href>
+		<refreshMode>onInterval</refreshMode>
+		<refreshInterval>60</refreshInterval>
+    	</Link>
+    </NetworkLink>
+  </Document>
+</kml>
+

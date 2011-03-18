@@ -64,7 +64,7 @@ class Element(xml.dom.minidom.Element):
 xml.dom.minidom.Element = Element
 
 class KML:
-    """"""
+    """Creates KML"""
 
     def __init__(self, title, description=''):
         """Create the overall KML document."""
@@ -104,14 +104,14 @@ class KML:
         href.appendChild(href_text)
         self.append(doc)
 
-    def add_placemark(self, name, lon, lat, desc='', style=''):
+    def add_placemark(self, name, lon, lat, desc='', style='', altitude=0):
         """Add a new Placemark."""
         doc = xml.dom.minidom.Document()
         pm = doc.createElement("Placemark")
         doc.appendChild(pm)
         name_el = doc.createElement("name")
         pm.appendChild(name_el)
-        name_text = doc.createTextNode("string")
+        name_text = doc.createTextNode(name)
         name_el.appendChild(name_text)
         desc_el = doc.createElement("description")
         pm.appendChild(desc_el)
@@ -126,7 +126,7 @@ class KML:
         pm.appendChild(pt)
         coords = doc.createElement("coordinates")
         pt.appendChild(coords)
-        coords_text = doc.createTextNode('%s,%s,0' % (lon,lat))
+        coords_text = doc.createTextNode('%s,%s,%s' % (lon,lat,altitude))
         coords.appendChild(coords_text)
         self.append(doc)
 

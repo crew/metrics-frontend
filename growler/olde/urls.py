@@ -25,8 +25,27 @@ urlpatterns = patterns('%s.olde.views' % settings.MODULE,
     url(r'^windows/$', 'windows', name='windows'),
     url(r'^view/$', 'view', name='view'),
 
+    url(r'^map/windows/$', 'map_windows',
+        name='map-windows'),
+    url(r'^map/linux/$', 'map_linux',
+        name='map-linux'),
+    url(r'^map/lab102/$', 'map_lab102',
+        name='map-lab102'),
+
+    url(r'^kml/linux/current/$', 'kml_linux_current',
+        name='kml-linux-current'),
+    url(r'^kml/linux/current/dynamic/$', 'kml_linux_current_dynamic',
+        name='kml-linux-current-dynamic'),
+
+    url(r'^kml/lab102/current/$', 'kml_lab102_current',
+        name='kml-lab102-current'),
+    url(r'^kml/lab102/current/dynamic/$', 'kml_lab102_current_dynamic',
+        name='kml-lab102-current-dynamic'),
+
     url(r'^kml/windows/current/$', 'kml_windows_current',
         name='kml-windows-current'),
+    url(r'^kml/windows/current/dynamic/$', 'kml_windows_current_dynamic',
+        name='kml-windows-current-dynamic'),
     url(r'^kml/windows/hist/$', 'kml_windows_historical',
         name='kml-windows-historical'),
 
