@@ -220,72 +220,79 @@ def kml_lab102_current_dynamic(request):
                         'application/vnd.google-earth.kml+xml')
 
 def kml_from_list(name, lst):
-    k = KML(name,'')
-    k.add_style("inuse","http://maps.google.com/mapfiles/ms/icons/red.png")
-    k.add_style("unused","http://maps.google.com/mapfiles/ms/icons/green.png")
+    k = KML(name, '')
+    # XXX hardcoding urls.
+    k.add_style("inuse", "http://maps.google.com/mapfiles/ms/icons/red.png")
+    k.add_style("unused", "http://maps.google.com/mapfiles/ms/icons/green.png")
     lst.sort(key=lambda r: r['longitude'])
+    def get_description(c):
+        # date = datetime.fromtimestamp(c['timestamp'],
+        #     timezone('US/Eastern')).strftime("%A at %I:%M%p")
+        prefix = 'In Use' if c['inuse'] else 'Free'
+        date = c['timestamp'].strftime("%A at %I:%M%p")
+        return '%s as of %s' % (prefix, date)
+    def get_style(c):
+        return 'inuse' if c['inuse'] else 'unused'
     for c in lst:
-        k.add_placemark(c['hostname'],
-                        c['longitude'], c['latitude'],
-                        altitude=c['floor'], 
-                        style='inuse' if (c['inuse']) else 'unused',
-                        #NOTE: The time below appears to be unreliable.
-                        desc='%s as of %s' %
-                        ('In Use' if (c['inuse']) else 'Free',
-                         datetime.fromtimestamp(c['timestamp'],
-                                                timezone('US/Eastern'))
-                         .strftime("%A at %I:%M%p")))
+        k.add_placemark(c['hostname'], c['longitude'], c['latitude'],
+            altitude=c['floor'], style=get_style(c), desc=get_description(c))
     return k.output_kml()
 
 def get_windows_current():
-    interval = 1 # TODO
     api = HttpAPI(namespace='windows', apikey='test',
-                  url=settings.FLAMONGO_ENDPOINT)
+        url=settings.FLAMONGO_ENDPOINT)
     now = time.time()
-    #pad with an extra minute
+    # pad with an extra minute
     then = now - 660
     newlist = []
     for m in winmachines:
         np = m['point']
         ret = api.retrieve_last(attributes={'hostname': np['name']})[0]
-        newlist.append({'hostname':np['name'],
-                        'longitude':np['longitude'],
-                        'latitude':np['latitude'],
-                        'floor':np['floor'],
-                        'inuse':(ret['timestamp']>=then),
-                        'timestamp':ret['timestamp']})
+        # NOTE: The time below appears to be unreliable.
+        # XXX: temporary fix.
+        timestamp = datetime.fromtimestamp(ret['timestamp'] - 3600 * 4)
+        newlist.append({'hostname': np['name'], 'longitude': np['longitude'],
+            'latitude': np['latitude'], 'floor': np['floor'],
+            'inuse': (ret['timestamp'] >= then), 'timestamp': timestamp})
     return newlist
 
 def get_linux_current():
-    interval = 1 # TODO
     api = HttpAPI(namespace='linux', apikey='test',
-                  url=settings.FLAMONGO_ENDPOINT)
+        url=settings.FLAMONGO_ENDPOINT)
     newlist = []
     for m in linmachines:
         np = m['point']
         ret = api.retrieve_last(
             attributes={'hostname': '%s.ccs.neu.edu' % np['name'],
-                        'is_local': True})[0]
-        newlist.append({'hostname':np['name'],
-                        'longitude':np['longitude'],
-                        'latitude':np['latitude'],
-                        'floor':np['floor'],
-                        #last event was a login (so it's in use)
-                        'inuse':(ret['event']=='login'),
-                        'timestamp':ret['timestamp']})
+                'is_local': True})[0]
+        # XXX: temporary fix.
+        timestamp = datetime.fromtimestamp(ret['timestamp'] - 3600 * 4)
+        newlist.append({'hostname': np['name'], 'longitude': np['longitude'],
+            'latitude': np['latitude'], 'floor': np['floor'],
+            # last event was a login (so it's in use)
+            'inuse': (ret['event'] == 'login'),
+            'timestamp': timestamp})
     return newlist
 
 def kml_windows_historical(request):
     return HttpResponse('')
 
+def get_absurl(request):
+    if request.is_secure():
+        return 'https://%s' % request.get_host()
+    return 'http://%s' % request.get_host()
+
 def map_windows(request):
     return render_to_response('olde/windows-map.html',
+        {"absurl": get_absurl(request)},
         context_instance=RequestContext(request))
 
 def map_linux(request):
     return render_to_response('olde/linux-map.html',
+        {"absurl": get_absurl(request)},
         context_instance=RequestContext(request))
 
 def map_lab102(request):
     return render_to_response('olde/lab102-map.html',
+        {"absurl": get_absurl(request)},
         context_instance=RequestContext(request))

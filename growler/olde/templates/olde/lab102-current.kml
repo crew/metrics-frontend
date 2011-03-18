@@ -6,11 +6,10 @@
     <NetworkLink>
 	<name>Computers NetworkLink</name>
     	<Link>
-		<href>{{absurl}}{% url kml-lab102-current-dynamic %}</href>
+		<href>{{ absurl }}{% url kml-lab102-current-dynamic %}</href>
 		<refreshMode>onInterval</refreshMode>
 		<refreshInterval>60</refreshInterval>
     	</Link>
     </NetworkLink>
   </Document>
 </kml>
-
