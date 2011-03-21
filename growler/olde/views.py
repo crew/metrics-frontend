@@ -85,18 +85,14 @@ def windows_data(start, end):
     # XXX End hack
     return output
 
-def linux_local_data(start, end):
-    #ns = 'linux'
-    #start = float(request.GET['start'])
-    #end = float(request.GET['end'])
-#    interval = int(request.GET['interval'])
+def linux_data(start, end, local):
     interval = 600
     api = HttpAPI(namespace='linux', apikey='test', url=settings.FLAMONGO_ENDPOINT)
     s = datetime.utcfromtimestamp(start)
     s = datetime(s.year, s.month, s.day, 0, 0) # Get the start of day.
     s = time.mktime(s.timetuple())
     ret = api.retrieve(start_time=s, end_time=end, interval=interval,
-        attributes={'is_local': True})
+        attributes={'is_local': local})
     # Fetch the reboot events.
     reboots = api.retrieve(start_time=s, end_time=end, interval=interval,
         attributes={'event': 'reboot'})
@@ -177,8 +173,10 @@ def json_view(request, ns, start, end):
         return json_linux_local_data(request)
     else: #'all' in ns.lower():
         output_windows = windows_data(start, end)
-        output_linux = linux_local_data(start, end)
-        output = { 'linux': output_linux, 'windows': output_windows } 
+        output_linux_local = linux_data(start, end, True)
+        output_linux_ssh = linux_data(start, end, False)
+        output = { 'linux': { 'local': output_linux_local, 'ssh': output_linux_ssh }
+                 , 'windows': output_windows } 
         return HttpResponse(json.dumps(output), mimetype='text/json')
 
 @default_json_get
@@ -190,7 +188,7 @@ def json_view_windows(request, ns, start, end):
 
 @default_json_get
 def json_linux_local_data(request, ns, start, end):
-    output = linux_local_data(start, end)
+    output = linux_data(start, end)
     return HttpResponse(json.dumps(output), mimetype='text/json')
 
 def kml_windows_current(request):

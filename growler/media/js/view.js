@@ -4,20 +4,18 @@ labMetrics.create_chart = function (givendata) {
     , i
     , x
     , windowsdata = []
-    , linuxdata = []
+    , linuxLocal = []
+    , linuxRemote = []
     , tenmins = 60*10*1000;
 
-  //for (i = 0, l = data.length; i < l; i++) {
-    // For new Date(float) the unit is in milliseconds instead of seconds.
-    // Account for timezone offset.
-  function milliseconds(data, givendata){
+  function milliseconds(data, givendata, name){
     $.map(givendata, function(el, i){
         var time = (givendata[i].timestamp - labMetrics.tz_offset) * 1000
           , current = {};
 
         current.x = time;
         current.y = givendata[i].count;
-        current.name = new Date(time);
+        current.name = name;//new Date(time);
 
         if (!start) {
           start = current.x;
@@ -26,8 +24,9 @@ labMetrics.create_chart = function (givendata) {
         data[data.length] = current;
     });
   }
-  milliseconds(windowsdata, givendata.windows);
-  milliseconds(linuxdata, givendata.linux);
+  milliseconds(windowsdata, givendata.windows, 'Windows');
+  milliseconds(linuxLocal, givendata.linux.local, 'Linux Local');
+  milliseconds(linuxRemote, givendata.linux.ssh, 'Linux Remote');
 
   // Create the chart.
   labMetrics.chart = new Highcharts.Chart({
@@ -45,15 +44,15 @@ labMetrics.create_chart = function (givendata) {
       // The title.
     , tooltip: {
           formatter: function(){
-            var windows, linux, d, i, l, s;
-            for(i = 0, l = this.points.length; i < l; ++i){
-              if(this.points[i].point.name == 'windows') windows = this.points[i];
-              else if(this.points[i].point.name == 'linux') linux = this.points[i];
-            }
+            var windows, linux, p, d, i, l, s;
+
             d = new Date(this.x);
-            s = d.toString().split(' GMT')[0] +
-                (linux ? '<br>Linux: <b>'+linux.y+'</b>' : '') +
-                (windows ? '<br>Windows: <b>'+windows.y+'</b>' : '');
+            s = d.toString().split(' GMT')[0];
+
+            for(i = 0, l = this.points.length; i < l; ++i){
+              p = this.points[i].point;
+              s += '<br>'+p.name+': <b>'+p.y+'</b>'
+            }
             return s;
           }
         , shared: true
@@ -62,14 +61,15 @@ labMetrics.create_chart = function (givendata) {
       // The list of "series" (a line you see on the graph).
     , series: [{
           name: "Windows"
-        , data: $.map(windowsdata, function(el, i){ return $.extend(true, {}, el, {name: 'windows'});})
+        , data: windowsdata
         }
         , {
-            name: "Linux"
-          , data: $.map(linuxdata, function(el, i){ return $.extend(true, {}, el, {name: 'linux'});})
-          //, data: $.map(data, function(el, i){
-                //return $.extend(true, {}, el, {name: 'linux', y: ~~((5/2)*el.y)});
-            //})
+            name: "Linux Local"
+          , data: linuxLocal
+        }
+        , {
+            name: "Linux Remote"
+          , data: linuxRemote
         }]
     , xAxis: {
           type: 'datetime'
