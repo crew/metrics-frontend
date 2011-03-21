@@ -30,6 +30,7 @@ labMetrics.create_chart = function (data) {
         , marginRight: 25
         , marginBottom: 100
         , width: 980
+        , zoomType: 'y'
         }
       // The title.
     , title: {text: ""}
