@@ -6,6 +6,7 @@ labMetrics.create_chart = function (givendata) {
     , windowsdata = []
     , linuxLocal = []
     , linuxRemote = []
+    , linuxBoth = []
     , tenmins = 60*10*1000;
 
   function milliseconds(data, givendata, name){
@@ -27,6 +28,25 @@ labMetrics.create_chart = function (givendata) {
   milliseconds(windowsdata, givendata.windows, 'Windows');
   milliseconds(linuxLocal, givendata.linux.local, 'Linux Local');
   milliseconds(linuxRemote, givendata.linux.ssh, 'Linux Remote');
+
+  var offset = 0;
+  $.map(linuxLocal, function(el, i){
+    if(linuxRemote[i+offset] && el.x == linuxRemote[i+offset].x) {
+      var current = {};
+      
+      current.x = el.x;
+      current.y = el.y + (linuxRemote[i] ? linuxRemote[i+offset].y : 0);
+      current.name = 'Linux Total'
+      linuxBoth[linuxBoth.length] = current;
+    }
+    else {
+      offset++
+    }
+
+    return el;
+  });
+
+  console.log(linuxBoth[0], linuxLocal[0], linuxRemote[0]);
 
   // Create the chart.
   labMetrics.chart = new Highcharts.Chart({
@@ -62,6 +82,10 @@ labMetrics.create_chart = function (givendata) {
     , series: [{
           name: "Windows"
         , data: windowsdata
+        }
+        , {
+            name: "Linux Total"
+          , data: linuxBoth
         }
         , {
             name: "Linux Local"
