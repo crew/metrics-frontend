@@ -46,8 +46,6 @@ labMetrics.create_chart = function (givendata) {
     return el;
   });
 
-  console.log(linuxBoth[0], linuxLocal[0], linuxRemote[0]);
-
   // Create the chart.
   labMetrics.chart = new Highcharts.Chart({
       chart: {
@@ -85,6 +83,11 @@ labMetrics.create_chart = function (givendata) {
             name: "Linux Remote"
           , data: linuxRemote
         }]
+  , plotOptions: {
+      line: {
+        pointStart: start
+      }
+    }
     , xAxis: {
           type: 'datetime'
         , labels: {

@@ -1,3 +1,9 @@
+var width = 980;
+var height = 400;
+$('#canvas')
+  .width(width)
+  .height(height);
+;
 Highcharts.setOptions({
     credits: {text: "crew", href: "."}
   , chart: {
@@ -7,7 +13,7 @@ Highcharts.setOptions({
       , defaultSeriesType: "line"
       , marginRight: 170
       , marginBottom: 100
-      , width: 980
+      , width: width
       }
   , title: {text: ""}
     , xAxis: {
@@ -34,11 +40,6 @@ Highcharts.setOptions({
       , layout: 'vertrical'
       , verticalAlign: 'middle'
       , x : -15
-    }
-  , plotOptions: {
-      line: {
-        pointStart: start
-      }
     }
   , exporting: {
         enabled: true
