@@ -50,16 +50,8 @@ labMetrics.create_chart = function (givendata) {
 
   // Create the chart.
   labMetrics.chart = new Highcharts.Chart({
-      credits: {text: "crew", href: "."}
-    , chart: {
-          // the id of the div element for drawing the graph.
-          renderTo: "graph"
-          // The type of the graph.
-        , defaultSeriesType: "line"
-        , marginRight: 170
-        , marginBottom: 100
-        , width: 980
-        , zoomType: 'x'
+      chart: {
+          zoomType: 'x'
         }
       // The title.
     , tooltip: {
@@ -77,8 +69,6 @@ labMetrics.create_chart = function (givendata) {
           }
         , shared: true
         }
-    , title: {text: ""}
-      // The list of "series" (a line you see on the graph).
     , series: [{
           name: "Windows"
         , data: windowsdata
@@ -108,31 +98,6 @@ labMetrics.create_chart = function (givendata) {
                   ('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2);
             }
           }
-        }
-    , yAxis: {
-          title: {
-              text: 'Computers In Use'
-        }
-        , plotLines: [{
-              value: 0
-            , width: 1
-            , color: '#808080'
-        }]
-      }
-    , legend: {
-          align: 'right'
-        , borderWidth: 0
-        , layout: 'vertrical'
-        , verticalAlign: 'middle'
-        , x : -15
-      }
-    , plotOptions: {
-        line: {
-          pointStart: start
-        }
-      }
-    , exporting: {
-          enabled: true
         }
   });
 };

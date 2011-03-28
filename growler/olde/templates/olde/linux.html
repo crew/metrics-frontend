@@ -1,5 +1,6 @@
 {% extends "fetch.html" %}
 {% block scripts-fetch %}
+  <script type="text/javascript" src="{% url media "js/linux.js" %}"></script>
   <script type="text/javascript" src="{% url media "js/perMachine.js" %}"></script>
   <script>labMetrics.run("{% url json-linux-machines-data %}", 'linux')</script>
 {% endblock %}
