@@ -1,7 +1,10 @@
 Highcharts.setOptions({
-  yAxis: {
-      title: {
-          text: 'Total Usage in 10min incrememnts'
+    yAxis: {
+        title: {
+            text: 'Total Usage in 10min incrememnts'
+      }
     }
-  }
+  , legend: {
+      enabled: false
+    }
 });

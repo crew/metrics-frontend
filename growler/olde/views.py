@@ -157,6 +157,24 @@ def json_linux_machines_data(request, ns, start, end):
     return HttpResponse(json.dumps(output), mimetype='text/json')
 
 @default_json_get
+def json_linux_machines_data_both(request, ns, start, end):
+    interval = 1 # TODO
+    # Retrieve data.
+    api = HttpAPI(namespace=ns, apikey='test', url=settings.FLAMONGO_ENDPOINT)
+    output_linux_local = api.retrieve(start_time=start, end_time=end, interval=interval,
+        attributes={'is_local': True})
+    output_linux_ssh = api.retrieve(start_time=start, end_time=end, interval=interval,
+        attributes={'is_local': False})
+
+    for r in output_linux_local:
+        r['hostname'] = r['hostname'].split('.')[0]
+    for r in output_linux_ssh:
+        r['hostname'] = r['hostname'].split('.')[0]
+
+    output = {'machines': list(get_linux_machines()), 'data': { 'linuxLocal' : output_linux_local, 'linuxRemote' : output_linux_ssh } }
+    return HttpResponse(json.dumps(output), mimetype='text/json')
+
+@default_json_get
 def json_view_all(request, ns, start, end):
     interval = 1 # TODO
     # Retrieve data.

@@ -2,22 +2,41 @@ labMetrics.create_chart = function (data) {
   var machines = data.machines
     , machinesMap = {}
 	  , seriesdata = []
-    , machine;
-    
-  $.map(machines, function(el, i){
-      machinesMap[el] = 0;
-	});
+    , seriesdataSsh = null
+    , machine
+    , series = [];
 
-  $.map(data.data, function(el, i){
-      machinesMap[el.hostname]++;
-      if(isNaN(machinesMap[el.hostname])){
-        debugger;
-      }
-  });
+  function setup(machines, machinesMap, data, seriesdata){
+    $.map(machines, function(el, i){
+        machinesMap[el] = 0;
+    });
 
-  for(machine in machinesMap){
-    seriesdata[seriesdata.length] = {name: machine, y: machinesMap[machine]};
+    $.map(data, function(el, i){
+        machinesMap[el.hostname]++;
+    });
+
+    for(machine in machinesMap){
+      seriesdata[seriesdata.length] = {name: machine, y: machinesMap[machine]};
+    }
   }
+    
+  if(Array.isArray(data.data)) {
+    setup(machines, machinesMap, data.data, seriesdata);
+  }
+  else {
+    setup(machines, machinesMap, data.data.linuxLocal, seriesdata);
+    seriesdataSsh = []
+    setup(machines, machinesMap, data.data.linuxRemote, seriesdataSsh);
+  }
+  
+  series.push({
+          name: seriesdataSsh ? "Linux Local" : "Windows"
+        , data: seriesdata
+        });
+  seriesdataSsh && series.push({
+          name: "Linux Remote"
+        , data: seriesdataSsh
+        });
   
 	// Create the chart.
   labMetrics.chart = new Highcharts.Chart({
@@ -26,10 +45,7 @@ labMetrics.create_chart = function (data) {
         , marginRight: 25
         , marginBottom: 100
         }
-    , series: [{
-          name: "Windows"
-        , data: seriesdata
-        }]
+    , series: series
 		, xAxis: {
 					categories: machines
 				,	labels: {
@@ -37,9 +53,6 @@ labMetrics.create_chart = function (data) {
             , align: 'right'
 						}
 			}
-    , legend: {
-				enabled: false
-      }
     , plotOptions: {
          column: {
             pointPadding: 0.2,

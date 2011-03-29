@@ -15,6 +15,8 @@ urlpatterns = patterns('%s.olde.views' % settings.MODULE,
         name='json-windows-machines-data'),
 		url(r'^json/linux/data/$', 'json_linux_machines_data',
         name='json-linux-machines-data'),
+		url(r'^json/linux/data/both$', 'json_linux_machines_data_both',
+        name='json-linux-machines-data-both'),
 
     url(r'^json/linux-local/data/$', 'json_linux_local_data',
         name='json-linux-local-data'),
