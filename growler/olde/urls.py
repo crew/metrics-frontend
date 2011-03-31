@@ -25,7 +25,7 @@ urlpatterns = patterns('%s.olde.views' % settings.MODULE,
 
     url(r'^linux/$', 'linux', name='linux'),
     url(r'^windows/$', 'windows', name='windows'),
-    url(r'^view/$', 'view', name='view'),
+    url(r'^lab102/$', 'view', name='view'),
 
     url(r'^map/windows/$', 'map_windows',
         name='map-windows'),
