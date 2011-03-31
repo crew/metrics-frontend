@@ -53,4 +53,8 @@ urlpatterns = patterns('%s.olde.views' % settings.MODULE,
         name='kml-windows-historical'),
 
     url(r'^$', 'index', name='index'),
+
+    url(r'.*', 'error', name='error-404'),
+    url(r'404', 'error', name='error-404'),
+    url(r'500', 'error500', name='error-500'),
 )
