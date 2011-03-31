@@ -9,9 +9,6 @@ from pytz import timezone
 from random import random
 from decorators import default_json_get
 import json
-import sys
-sys.path.append('/net/ccs/lib/python/')
-import ccs.hostbase
 from django.core.urlresolvers import resolve
 from kmlgen import KML
 
