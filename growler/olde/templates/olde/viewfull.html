@@ -1,0 +1,36 @@
+{% extends "fetch.html" %}
+{% block styles %}
+  <style>
+    body {
+      height: 100%;
+      width: 100%;
+      visibility: hidden;
+    }
+    #graph {
+      position: absolute;
+      display: block;      
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 100%;
+    }
+  </style>
+{% endblock %}
+{% block scripts-fetch %}
+  <script type="text/javascript" src="{% url media "js/view.js" %}"></script>
+  <script>
+    Highcharts.setOptions({
+        chart: {
+            width: window.innerWidth
+          , height: window.innerHeight
+          }
+      });
+    var graph = document.querySelector('#graph');
+    graph.parentNode.removeChild(graph);
+    document.body.appendChild(graph);
+
+    labMetrics.run("{% url json-view %}", 'all')
+
+    setTimeout(function(){document.body.style.visibility = 'visible';}, 1000);
+  </script>
+{% endblock %}

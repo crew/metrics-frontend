@@ -29,6 +29,10 @@ def view(request):
     return render_to_response('olde/view.html',
         context_instance=RequestContext(request))
 
+def view_full(request):
+    return render_to_response('olde/viewfull.html',
+        context_instance=RequestContext(request))
+
 def windows(request):
     return render_to_response('olde/windows.html',
         context_instance=RequestContext(request))
