@@ -19,6 +19,11 @@ winmachines = [{"point":{"name":"charmander","latitude":"42.33860107","floor":1,
 
 linmachines = [{"point":{"name":"choplifter","latitude":"42.33854258","floor":1,"longitude":"-71.09246933"}},{"point":{"name":"spaceinvaders","latitude":"42.33855038","floor":1,"longitude":"-71.09246665"}},{"point":{"name":"blueprint","latitude":"42.33855819","floor":1,"longitude":"-71.09246329"}},{"point":{"name":"bumpnjump","latitude":"42.33856625","floor":1,"longitude":"-71.09246028"}},{"point":{"name":"attackufo","latitude":"42.33858409","floor":1,"longitude":"-71.09245089"}},{"point":{"name":"alienarena","latitude":"42.33859177","floor":1,"longitude":"-71.09244787"}},{"point":{"name":"orbit","latitude":"42.33859983","floor":1,"longitude":"-71.09244469"}},{"point":{"name":"seawolf","latitude":"42.33860739","floor":1,"longitude":"-71.09244133"}},{"point":{"name":"computerspace","latitude":"42.33861556","floor":1,"longitude":"-71.09243798"}},{"point":{"name":"startrek","latitude":"42.33862325","floor":1,"longitude":"-71.09243513"}},{"point":{"name":"mrdo","latitude":"42.3386313","floor":1,"longitude":"-71.09243178"}},{"point":{"name":"millipede","latitude":"42.33863898","floor":1,"longitude":"-71.09242859"}},{"point":{"name":"spyhunter","latitude":"42.33858211","floor":1,"longitude":"-71.092442"}},{"point":{"name":"hattrick","latitude":"42.33858979","floor":1,"longitude":"-71.09243865"}},{"point":{"name":"avenger","latitude":"42.33859772","floor":1,"longitude":"-71.09243547"}},{"point":{"name":"agentx","latitude":"42.33860553","floor":1,"longitude":"-71.09243262"}},{"point":{"name":"brix","latitude":"42.3386137","floor":1,"longitude":"-71.09242943"}},{"point":{"name":"berzerk","latitude":"42.33862176","floor":1,"longitude":"-71.09242641"}},{"point":{"name":"mousetrap","latitude":"42.33862919","floor":1,"longitude":"-71.09242306"}},{"point":{"name":"upscope","latitude":"42.33863762","floor":1,"longitude":"-71.09241937"}},{"point":{"name":"turtles","latitude":"42.33859041","floor":1,"longitude":"-71.09234796"}},{"point":{"name":"armorattack","latitude":"42.33859809","floor":1,"longitude":"-71.09234477"}},{"point":{"name":"warlords","latitude":"42.33860615","floor":1,"longitude":"-71.09234176"}},{"point":{"name":"missilecommand","latitude":"42.33861445","floor":1,"longitude":"-71.09233857"}},{"point":{"name":"joust","latitude":"42.33862213","floor":1,"longitude":"-71.09233555"}},{"point":{"name":"biplane","latitude":"42.33862981","floor":1,"longitude":"-71.09233203"}},{"point":{"name":"timepilot","latitude":"42.33863774","floor":1,"longitude":"-71.09232885"}},{"point":{"name":"gyruss","latitude":"42.33864555","floor":1,"longitude":"-71.09232566"}},{"point":{"name":"majorhavoc","latitude":"42.33858273","floor":1,"longitude":"-71.09231544"}},{"point":{"name":"alleyrally","latitude":"42.33859078","floor":1,"longitude":"-71.09231208"}},{"point":{"name":"skydiver","latitude":"42.33859846","floor":1,"longitude":"-71.0923089"}},{"point":{"name":"bubbles","latitude":"42.33860652","floor":1,"longitude":"-71.09230555"}},{"point":{"name":"batterup","latitude":"42.3386142","floor":1,"longitude":"-71.09230236"}},{"point":{"name":"tank","latitude":"42.33862213","floor":1,"longitude":"-71.09229968"}},{"point":{"name":"apollo14","latitude":"42.33863019","floor":1,"longitude":"-71.09229633"}},{"point":{"name":"jumpbug","latitude":"42.33863737","floor":1,"longitude":"-71.09229331"}},{"point":{"name":"breakout","latitude":"42.33858112","floor":1,"longitude":"-71.09230605"}},{"point":{"name":"blackwidow","latitude":"42.33858892","floor":1,"longitude":"-71.0923032"}},{"point":{"name":"hiway","latitude":"42.33859673","floor":1,"longitude":"-71.09230018"}},{"point":{"name":"bosconian","latitude":"42.33860503","floor":1,"longitude":"-71.09229683"}},{"point":{"name":"astroblaster","latitude":"42.33861271","floor":1,"longitude":"-71.09229381"}},{"point":{"name":"eagle","latitude":"42.33862015","floor":1,"longitude":"-71.09229046"}},{"point":{"name":"gauntlet","latitude":"42.3386282","floor":1,"longitude":"-71.09228761"}},{"point":{"name":"vanguard","latitude":"42.33863576","floor":1,"longitude":"-71.09228442"}}]
 
+windows_machine_list = ['beedrill', 'blastoise', 'bulbasaur', 'butterfree', 'caterpie', 'charizard', 'charmander', 'charmeleon', 'clefairy', 'fearow', 'ivysaur', 'kakuna', 'metapod', 'nidoking', 'nidoqueen', 'nidoran', 'nidorina', 'nidorino', 'pidgeot', 'pidgeotto', 'pidgey', 'pikachu', 'raticate', 'rattata', 'sandshrew', 'sandslash', 'spearow', 'squirtle', 'venusaur', 'vulpix', 'wartortle', 'weedle']
+linux_machine_list = ['agentx', 'alienarena', 'alleyrally', 'apollo14', 'armorattack', 'astroblaster', 'attackufo', 'avenger', 'batterup', 'berzerk', 'biplane', 'blackwidow', 'blueprint', 'bosconian', 'breakout', 'brix', 'bubbles', 'bumpnjump', 'choplifter', 'computerspace', 'eagle', 'gauntlet', 'gorf', 'gyruss', 'hattrick', 'hiway', 'joust', 'jumpbug', 'majorhavoc', 'millipede', 'missilecommand', 'mousetrap', 'mrdo', 'orbit', 'seawolf', 'skydiver', 'spaceinvaders', 'spyhunter', 'startrek', 'tank', 'timepilot', 'turtles', 'upscope', 'vanguard', 'warlords']
+
+
+
 def index(request):
     return render_to_response('olde/index.html',
         context_instance=RequestContext(request))
@@ -36,16 +41,12 @@ def linux(request):
         context_instance=RequestContext(request))
 
 def get_windows_machines():
-    hb = ccs.hostbase.HostBase()
-    for r in hb.GetRecords():
-        if r['room'] == '102' and 'window' in r['os'].lower():
-            yield r['hostname'].split('.')[0]
+    for r in windows_machine_list:
+        yield r
 
 def get_linux_machines():
-    hb = ccs.hostbase.HostBase()
-    for r in hb.GetRecords():
-        if r['room'] == '102' and 'ubuntu' in r['os'].lower():
-            yield r['hostname'].split('.')[0]
+    for r in linux_machine_list:
+        yield r
 
 def json_windows_machines(request):
     if not request.method == 'GET':
