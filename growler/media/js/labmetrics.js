@@ -19,10 +19,29 @@ labMetrics.getLast24 = function(){
     };
 };
 
+labMetrics.getLocalStorage = function(){
+  if(Modernizr.localstorage){
+    var now = new Date().getTime()
+      , local = window.localStorage["data" + window.location.pathname]
+      , data = local && JSON.parse(local)
+      , then = data && data.currentTime
+
+    if(then && Math.abs(now - then) < 60000 ) {
+      delete data.currentTime
+      return data
+    }
+  }
+}
+labMetrics.addLocalStorage = function(data){
+  data.currentTime = new Date().getTime()
+  Modernizr.localstorage && (window.localStorage["data"+window.location.pathname] = JSON.stringify(data));
+}
+
 labMetrics.reloadChart = function(start, end){
   var stime
     , etime
-    , ns = "windows";
+    , ns = "windows"
+    , data
 
   start && labMetrics.start.datetimepicker('setDate', start);
   end && labMetrics.end.datetimepicker('setDate', end);
@@ -45,21 +64,29 @@ labMetrics.reloadChart = function(start, end){
     return false;
   }
   else {
+    data = labMetrics.getLocalStorage()
 
-    $('#fetch').html('<img src="/media/graphics/ajax-loader.gif">');
-
-    $.ajax({
-        type: "GET"
-      , url: labMetrics.jsonViewUrl
-      , success: labMetrics.create_chart
-      , complete: function(){ $('#fetch').html('Fetch'); }
-      , data: {
-            'ns': labMetrics.namespace
-          , 'start': stime.getTime()/1000
-          , 'end': etime.getTime()/1000
-        }
-      });
+    if(data){
+      console.log("Got it from localStorage")
+      labMetrics.create_chart(data)
     }
+    else {
+      $('#fetch').html('<img src="/media/graphics/ajax-loader.gif">');
+
+      $.ajax({
+          type: "GET"
+        , url: labMetrics.jsonViewUrl
+        , success: function(data){ labMetrics.addLocalStorage(data)
+                                   labMetrics.create_chart(data) }
+        , complete: function(){ $('#fetch').html('Fetch'); }
+        , data: {
+              'ns': labMetrics.namespace
+            , 'start': stime.getTime()/1000
+            , 'end': etime.getTime()/1000
+          }
+        });
+    }
+  }
 };
 
 labMetrics.run = function(jsonViewUrl, namespace){
