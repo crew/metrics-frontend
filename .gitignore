@@ -4,3 +4,4 @@
 doc/build
 build
 *.sqlite3
+env
